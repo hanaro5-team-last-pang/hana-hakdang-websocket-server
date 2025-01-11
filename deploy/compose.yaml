@@ -1,0 +1,22 @@
+name: front-servers
+services:
+  reverse-proxy:
+    image: "traefik:v3.3.1"
+    command:
+#      - "--log.level=DEBUG"
+      - "--api.insecure=true"
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--entryPoints.web.address=:80"
+    ports:
+      - "80:80"
+      - "3001:8080"
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+  socket-server:
+    image: websocket-server:1.0
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.socket-server.rule=Host(`localhost`)
+      - traefik.http.services.socket-server.loadbalancer.server.port=8080
+    command: java -jar server.jar
