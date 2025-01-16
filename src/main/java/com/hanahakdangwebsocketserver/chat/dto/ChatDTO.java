@@ -1,5 +1,7 @@
 package com.hanahakdangwebsocketserver.chat.dto;
 
+
+import java.io.Serializable;
 import java.time.LocalDateTime;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -10,21 +12,22 @@ import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
+
 /**
- * 카프카 pub/sub에 사용될 메시지 타입
+ * 레디스 Sorted Set에 저장될 원소 DTO
  */
 @Getter
 @Builder
 @ToString
-@AllArgsConstructor
+@EqualsAndHashCode
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class ChatMessage {
-
-  private Long classroomId;
+@AllArgsConstructor
+public class ChatDTO implements Serializable {
 
   private String username;
 
@@ -37,5 +40,4 @@ public class ChatMessage {
   @JsonDeserialize(using = LocalDateTimeDeserializer.class)
   @JsonFormat(shape = JsonFormat.Shape.STRING)
   private LocalDateTime timestamp;
-
 }
