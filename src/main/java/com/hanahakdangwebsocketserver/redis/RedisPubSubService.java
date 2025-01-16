@@ -1,23 +1,30 @@
-package com.hanahakdangwebsocketserver.chat.service;
+package com.hanahakdangwebsocketserver.redis;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.data.redis.connection.MessageListener;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.listener.ChannelTopic;
 import org.springframework.data.redis.listener.RedisMessageListenerContainer;
 import org.springframework.stereotype.Service;
 
+import static com.hanahakdangwebsocketserver.redis.MapperExceptionEnum.CANT_CONVERT_INTO_JSON;
+
 /**
  * 레디스 pub/sub 서비스
  *
- * @param <V> 레디스의 value 타입을 지정
+ * @param <T> 레디스 pub/sub의 메시지 타입을 지정
  */
 @Service
 @RequiredArgsConstructor
-public class RedisPubSubService<V> {
+@Log4j2
+public class RedisPubSubService<T> {
 
-  private final RedisTemplate<String, V> redisTemplate;
+  private final RedisTemplate<String, String> redisTemplate;
   private final RedisMessageListenerContainer redisMessageListenerContainer;
+  private final ObjectMapper objectMapper;
 
   /**
    * 메시지를 발행하는 메서드
@@ -26,8 +33,14 @@ public class RedisPubSubService<V> {
    * @param message      발행할 메시지
    * @return 메시지를 수신한 클라이언트의 수를 반환
    */
-  public Long publish(ChannelTopic channelTopic, V message) {
-    return redisTemplate.convertAndSend(channelTopic.getTopic(), message);
+  public Long publish(ChannelTopic channelTopic, T message) {
+    try {
+      String msgJsonStr = objectMapper.writeValueAsString(message);
+      return redisTemplate.convertAndSend(channelTopic.getTopic(), msgJsonStr);
+    } catch (JsonProcessingException e) {
+      log.error(CANT_CONVERT_INTO_JSON.getMessage());
+      return 0L;
+    }
   }
 
   /**
