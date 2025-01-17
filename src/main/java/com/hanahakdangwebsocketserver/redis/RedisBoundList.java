@@ -11,7 +11,7 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.data.redis.core.BoundListOperations;
 import org.springframework.data.redis.core.RedisTemplate;
 
-import static com.hanahakdangwebsocketserver.redis.MapperExceptionEnum.CANT_CONVERT_INTO_JSON;
+import static com.hanahakdangwebsocketserver.common.enums.MapperExceptionEnum.CANT_CONVERT_INTO_JSON;
 
 
 /**

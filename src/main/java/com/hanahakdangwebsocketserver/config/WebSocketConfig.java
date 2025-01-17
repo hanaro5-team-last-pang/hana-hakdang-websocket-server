@@ -9,7 +9,6 @@ import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
 import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerConfigurer;
 
 import com.hanahakdangwebsocketserver.chat.middleware.SecureHandshakeInterceptor;
-import com.hanahakdangwebsocketserver.chat.service.ClassroomCheckService;
 
 
 @Configuration
@@ -17,15 +16,10 @@ import com.hanahakdangwebsocketserver.chat.service.ClassroomCheckService;
 public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
   @Bean
-  public ClassroomCheckService classroomCheckService() {
-    return new ClassroomCheckService();
+  public SecureHandshakeInterceptor secureHandshakeInterceptor() {
+    return new SecureHandshakeInterceptor();
   }
 
-  @Bean
-  public SecureHandshakeInterceptor secureHandshakeInterceptor() {
-    return new SecureHandshakeInterceptor(classroomCheckService());
-  }
-  
   @Override
   public void registerStompEndpoints(StompEndpointRegistry registry) {
     registry.addEndpoint("/classroom")

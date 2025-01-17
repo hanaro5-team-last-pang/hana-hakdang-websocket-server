@@ -1,16 +1,16 @@
 package com.hanahakdangwebsocketserver.chat.mapper;
 
-import com.hanahakdangwebsocketserver.chat.dto.ChatDTO;
+import com.hanahakdangwebsocketserver.chat.model.Chat;
 import com.hanahakdangwebsocketserver.chat.dto.ChatMessage;
 import com.hanahakdangwebsocketserver.chat.dto.ChatRequest;
 import com.hanahakdangwebsocketserver.chat.dto.ChatResponse;
-import com.hanahakdangwebsocketserver.chat.model.Chat;
 
 
 public class ChatMapper {
 
   public static Chat toModel(ChatRequest chatRequest) {
     return Chat.builder()
+        .lectureId(chatRequest.getLectureId())
         .username(chatRequest.getUsername())
         .body(chatRequest.getBody())
         .build();
@@ -33,8 +33,9 @@ public class ChatMapper {
         .build();
   }
 
-  public static ChatDTO toDTO(Chat chat) {
-    return ChatDTO.builder()
+  public static Chat toDTO(Chat chat) {
+    return Chat.builder()
+        .lectureId(chat.getLectureId())
         .username(chat.getUsername())
         .body(chat.getBody())
         .timestamp(chat.getTimestamp())
