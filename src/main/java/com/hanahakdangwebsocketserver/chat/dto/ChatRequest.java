@@ -19,6 +19,9 @@ import lombok.ToString;
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class ChatRequest {
+  
+  @NotNull
+  private Long lectureId;
 
   @NotNull
   @NotBlank

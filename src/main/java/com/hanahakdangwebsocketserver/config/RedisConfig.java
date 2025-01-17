@@ -9,13 +9,9 @@ import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
 import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.redis.listener.ChannelTopic;
-import org.springframework.data.redis.listener.RedisMessageListenerContainer;
-import org.springframework.data.redis.listener.adapter.MessageListenerAdapter;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
 
-import com.hanahakdangwebsocketserver.chat.listener.ChatMessageDelegate;
+import com.hanahakdangwebsocketserver.redis.RedisBoundHash;
 
 
 @Configuration
@@ -23,7 +19,6 @@ import com.hanahakdangwebsocketserver.chat.listener.ChatMessageDelegate;
 public class RedisConfig {
 
   private final ObjectMapper objectMapper;
-  private final SimpMessagingTemplate simpMessagingTemplate;
 
   @Value("${spring.data.redis.host}")
   private String host;
@@ -31,8 +26,8 @@ public class RedisConfig {
   @Value("${spring.data.redis.port}")
   private int port;
 
-  @Value("${classroom.chat.key}")
-  private String chatChannelName;
+  @Value("${classroom.entrance.bound-key}")
+  private String classroomEntranceKey;
 
   @Bean
   LettuceConnectionFactory lettuceConnectionFactory() {
@@ -40,8 +35,8 @@ public class RedisConfig {
   }
 
   @Bean
-  public RedisTemplate<String, ?> redisTemplate(RedisConnectionFactory connectionFactory) {
-    RedisTemplate<String, ?> redisTemplate = new RedisTemplate<>();
+  public RedisTemplate<String, String> redisTemplate(RedisConnectionFactory connectionFactory) {
+    RedisTemplate<String, String> redisTemplate = new RedisTemplate<>();
 
     redisTemplate.setConnectionFactory(connectionFactory);
     redisTemplate.setKeySerializer(new StringRedisSerializer());
@@ -52,18 +47,10 @@ public class RedisConfig {
     return redisTemplate;
   }
 
-  @Bean
-  public RedisMessageListenerContainer redisMessageListener() {
-    RedisMessageListenerContainer container = new RedisMessageListenerContainer();
-    container.setConnectionFactory(lettuceConnectionFactory());
-    container.addMessageListener(redisMessageAdapter(), ChannelTopic.of(chatChannelName));
-    return container;
-  }
 
   @Bean
-  MessageListenerAdapter redisMessageAdapter() {
-    return new MessageListenerAdapter(new ChatMessageDelegate(simpMessagingTemplate, objectMapper),
-        "handleMessage");
+  public RedisBoundHash<String> redisStringBoundHash(RedisTemplate<String, String> redisTemplate) {
+    return new RedisBoundHash<>(classroomEntranceKey, redisTemplate, objectMapper);
   }
 
 }
