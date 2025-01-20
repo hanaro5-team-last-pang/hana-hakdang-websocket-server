@@ -31,6 +31,8 @@ public class Chat implements Serializable {
 
   private Long lectureId;
 
+  private Long userId;
+
   private String username;
 
   private String body;

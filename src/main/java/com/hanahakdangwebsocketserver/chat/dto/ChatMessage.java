@@ -26,6 +26,8 @@ public class ChatMessage {
 
   private Long classroomId;
 
+  private Long userId;
+
   private String username;
 
   private String body;

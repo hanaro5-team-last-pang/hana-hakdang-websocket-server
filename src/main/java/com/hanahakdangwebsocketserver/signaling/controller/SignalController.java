@@ -24,4 +24,16 @@ public class SignalController {
     simpMessagingTemplate.convertAndSend("/topic/signaling/" + classroomId, message.getPayload());
   }
 
+  @MessageMapping("/trickle/{classroomId}")
+  public void trickleIce(@DestinationVariable("classroomId") String classroomId,
+      Message<?> message) {
+    log.debug("Received trickle {} from {}", message, classroomId);
+    simpMessagingTemplate.convertAndSend("/topic/trickle/" + classroomId, message.getPayload());
+  }
+
+  @MessageMapping("/enter/{classroomId}")
+  public void enter(@DestinationVariable("classroomId") String classroomId, Message<?> message) {
+    log.debug("Received enter {} from {}", message, classroomId);
+    simpMessagingTemplate.convertAndSend("/topic/enter/" + classroomId, message.getPayload());
+  }
 }

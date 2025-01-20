@@ -10,6 +10,7 @@ public class ChatMapper {
 
   public static Chat toModel(ChatRequest chatRequest) {
     return Chat.builder()
+        .userId(chatRequest.getUserId())
         .lectureId(chatRequest.getLectureId())
         .username(chatRequest.getUsername())
         .body(chatRequest.getBody())
@@ -19,6 +20,7 @@ public class ChatMapper {
   public static ChatMessage toMessage(Long classroomId, Chat chat) {
     return ChatMessage.builder()
         .classroomId(classroomId)
+        .userId(chat.getUserId())
         .username(chat.getUsername())
         .body(chat.getBody())
         .timestamp(chat.getTimestamp())
@@ -27,6 +29,7 @@ public class ChatMapper {
 
   public static ChatResponse toResponse(ChatMessage chatMessage) {
     return ChatResponse.builder()
+        .userId(chatMessage.getUserId())
         .username(chatMessage.getUsername())
         .body(chatMessage.getBody())
         .timestamp(chatMessage.getTimestamp())
@@ -36,6 +39,7 @@ public class ChatMapper {
   public static Chat toDTO(Chat chat) {
     return Chat.builder()
         .lectureId(chat.getLectureId())
+        .userId(chat.getUserId())
         .username(chat.getUsername())
         .body(chat.getBody())
         .timestamp(chat.getTimestamp())

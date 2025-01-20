@@ -21,6 +21,7 @@ import lombok.ToString;
 public class ChatResponse {
 
   private LocalDateTime timestamp;
+  private Long userId;
   private String username;
   private String body;
 }
