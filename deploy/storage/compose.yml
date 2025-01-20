@@ -1,0 +1,60 @@
+name: storages
+
+volumes:
+  broker_data:
+  cache_data:
+
+services:
+  reverse-proxy:
+    image: traefik:v3.3.1
+    environment:
+      - TZ=Asia/Seoul
+    command:
+      - '--providers.docker'
+      - '--providers.docker.exposedbydefault=false'
+      - '--entryPoints.cache.address=:6379'
+      - '--entryPoints.broker.address=:9092'
+      - '--accesslog=true'
+      - '--accesslog.filepath=/logs/access.log'
+      - '--accesslog.bufferingsize=100'
+    ports:
+      - "9092:9092"
+      - "6379:6379"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+  broker:
+    image: apache/kafka:3.9.0
+    container_name: kafka_broker
+    environment:
+      KAFKA_NODE_ID: 1
+      KAFKA_PROCESS_ROLES: broker,controller
+      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092,CONTROLLER://localhost:9093
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://${KAFKA_HOST}:${KAFKA_PORT}
+      KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT
+      KAFKA_CONTROLLER_QUORUM_VOTERS: 1@localhost:9093
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
+      KAFKA_NUM_PARTITIONS: 3
+    volumes:
+      - broker_data:/data
+    labels:
+      - traefik.enable=true
+      - traefik.tcp.routers.kafka.rule=HostSNI(`*`)
+      - traefik.tcp.routers.kafka.entryPoints=broker
+      - traefik.tcp.routers.kafka.service=kafka_broker
+      - traefik.tcp.services.kafka_broker.loadbalancer.server.port=9092
+  cache:
+    image: redis:7.4.1-alpine3.20
+    container_name: redis_cache
+    volumes:
+      - cache_data:/data
+    labels:
+      - traefik.enable=true
+      - traefik.tcp.routers.redis.rule=HostSNI(`*`)
+      - traefik.tcp.routers.redis.entryPoints=cache
+      - traefik.tcp.routers.redis.service=redis_cache
+      - traefik.tcp.services.redis_cache.loadbalancer.server.port=6379
+
