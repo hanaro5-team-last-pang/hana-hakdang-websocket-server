@@ -21,7 +21,7 @@ services:
     image: websocket-server:1.0
     labels:
       - traefik.enable=true
-      - traefik.http.routers.socket-server.rule=Host(`${DOMAIN_NAME}`)
+      - traefik.http.routers.socket-server.rule=Host(`${WS_DOMAIN_NAME}`)
       - traefik.http.services.socket-server.loadbalancer.server.port=8081
     command: java -jar server.jar
 
