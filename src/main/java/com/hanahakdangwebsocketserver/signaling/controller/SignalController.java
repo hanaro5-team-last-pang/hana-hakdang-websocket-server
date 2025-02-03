@@ -24,6 +24,13 @@ public class SignalController {
     simpMessagingTemplate.convertAndSend("/topic/signaling/" + classroomId, message.getPayload());
   }
 
+  @MessageMapping("/answer/{classroomId}")
+  public void receiveAnswer(@DestinationVariable("classroomId") String classroomId,
+      Message<?> message) {
+    log.debug("Received Answer {} from {}", message, classroomId);
+    simpMessagingTemplate.convertAndSend("/topic/answer/" + classroomId, message.getPayload());
+  }
+
   @MessageMapping("/trickle/{classroomId}")
   public void trickleIce(@DestinationVariable("classroomId") String classroomId,
       Message<?> message) {
