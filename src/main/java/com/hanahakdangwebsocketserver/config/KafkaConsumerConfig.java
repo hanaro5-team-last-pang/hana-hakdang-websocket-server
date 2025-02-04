@@ -29,7 +29,7 @@ public class KafkaConsumerConfig {
   public Map<String, Object> consumerConfigs() {
     return Map.of(
         ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServerUrl,
-        ConsumerConfig.GROUP_ID_CONFIG, "websocket1",
+        ConsumerConfig.GROUP_ID_CONFIG, "notified-group",
         ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, IntegerDeserializer.class,
         ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, ByteArrayDeserializer.class
     );
