@@ -16,6 +16,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
+import static com.hanahakdangwebsocketserver.notification.enums.NotificationResponseExceptionEnum.UNAUTHORIZED_TOKEN;
+
 @Log4j2
 @Component
 @RequiredArgsConstructor
@@ -46,10 +48,10 @@ public class TokenHandler {
       return isValid;
     } catch (ExpiredJwtException e) {
       log.warn("만료된 토큰: {}", token);
-      return false;
+      throw UNAUTHORIZED_TOKEN.createResponseStatusException();  // 예외를 던지도록 변경
     } catch (Exception e) {
       log.warn("유효하지 않은 토큰: {}", token);
-      return false;
+      throw UNAUTHORIZED_TOKEN.createResponseStatusException();  // 예외를 던지도록 변경
     }
   }
 
@@ -76,7 +78,7 @@ public class TokenHandler {
       return e.getClaims();
     } catch (Exception e) {
       log.error("JWT 파싱 중 오류 발생: {}", e.getMessage());
-      throw e; // validateToken 호출하는 쪽에서 이 예외를 캐치하도록 함
+      throw UNAUTHORIZED_TOKEN.createResponseStatusException();
     }
   }
 
